@@ -35,19 +35,19 @@ describe('test of mocked resource', () => {
 
 it('retries middleware stack when received error for 2 times', async () => {
   const resource = resourceCallWithError(2);
-  const trans = transmit(resource).use(retry(2))
+  const trans = transmit(resource).use(retry(2, 1000))
   expect((await trans(2)).status).toEqual('OK')
 })
 
 it('retries middleware stack when received error for 5 times', async () => {
   const resource = resourceCallWithError(3);
-  const trans = transmit(resource).use(retry(5))
+  const trans = transmit(resource).use(retry(5, 1000))
   expect((await trans(3)).status).toEqual('OK')
 })
 
 it('retries middleware stack when received error and when reached limit with no success throws error', async () => {
   const resource = resourceCallWithError(2);
-  const trans = transmit(resource).use(retry(1))
+  const trans = transmit(resource).use(retry(1, 1000))
 
   try {
     await trans(4)

@@ -81,6 +81,26 @@ import { retry } from 'transmit/lib/middlewares/retry';
 const api = transmit(resourceCall).use(retry(5, 1000));
 ```
 
+Or make possible to pass function for retry interval
+
+- `delays.constant(500)` - retries after 0.5 sec, then again after 0.5 sec, then again after 0.5 sec
+- `delays.constant()` - retries after 1 sec, then again after 1 sec, then again after 1 sec
+- delays.linear() - retries after 1 sec, then after 2 secs, then after 3 secs
+- delays.exponential() - retries after 1 sec, then after 4 secs, then after 9 secs
+
+```javascript
+import transmit from 'transmit';
+import { retry, delays } from 'transmit/lib/middlewares/retry';
+
+const api = transmit(resourceCall).use(retry(5, delays.linear()));
+```
+
+Custom retry delay function API:
+```javascript
+const { delayPromise } = require('../utils/delayPromise');
+const customRetryDelay = (retryCounter) => delayPromise(retryCounter * 100)
+```
+
 ## Broker
 
 Will merge inccomming calls with same arguments resolved by hashing function, which is by default JSON.stringify, but can be owerriden, to one call to api.

@@ -1,6 +1,12 @@
 const { delayPromise } = require('../utils/delayPromise');
 
-const retry = (counter = 5, delay = 0) => async function retryMiddleware(req, next) {
+const delays = {
+  constant: (time = 1000) => (i) => delayPromise(time),
+  linear: (time = 1000) => (i) => delayPromise(i * time),
+  exponential: (time = 1000) => (i) => delayPromise(i * i * time)
+}
+
+const retry = (counter = 5, delay = delays.linear()) => async function retryMiddleware(req, next) {
   let instanceCounter = counter + 0
 
   while(instanceCounter >= 0) {
@@ -18,7 +24,10 @@ const retry = (counter = 5, delay = 0) => async function retryMiddleware(req, ne
       if (instanceCounter < 0) {
         throw error
       }
-      if (delay > 0) {
+
+      if (typeof delay === 'function') {
+        await delay(instanceCounter)
+      } else if (typeof delay === 'number' && delay > 0) {
         await delayPromise(delay)
       }
     }
@@ -26,5 +35,6 @@ const retry = (counter = 5, delay = 0) => async function retryMiddleware(req, ne
 }
 
 module.exports = {
-  retry
+  retry,
+  delays
 }
