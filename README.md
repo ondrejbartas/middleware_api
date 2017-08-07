@@ -94,3 +94,14 @@ import { broker } from 'transmit/lib/middlewares/broker';
 const api = transmit(resourceCall).use(broker(JSON.stringify));
 ```
 
+## Timeout
+
+Set timeout for execution, when middleware chain will not complete in given timeout, it will throw Timeout Error.
+
+```javascript
+import transmit from 'transmit';
+import { timeout } from 'transmit/lib/middlewares/timeout';
+
+const api = transmit(resourceCall).use(timeout(1000));
+```
+
